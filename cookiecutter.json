@@ -1,8 +1,8 @@
 {
-    "project_name": "build123d-cad-template",
-    "package_name": "b123d_cad_template",
-    "author_name": "Cameron K. Brooks",
-    "email": "cbrook49@uwo.ca",
+    "project_name": "build123d-template",
+    "package_name": "b123d_template",
+    "author_name": "FirstName LastName",
+    "email": "name@email.com",
     "version": "0.1.0",
-    "project_description": "A Build123d CAD project template"
+    "project_description": "A build123d CAD project template"
 }

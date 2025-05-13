@@ -1,6 +1,6 @@
 # build123d-cad-template
 
-A Cookiecutter template for Build123d CAD projects.
+A Cookiecutter template for build123d CAD projects.
 
 ## Quickstart
 
@@ -28,7 +28,7 @@ You will be prompted for six values—here’s how to fill them:
   Typically this should be the initial version using [SemVer](https://semver.org/) (e.g. `0.1.0`).
 
 - **project_description**  
-  A short, descriptive tagline for your project (e.g. `A Build123d CAD project for robotics prototypes`).
+  A short, descriptive tagline for your project (e.g. `A build123d CAD project for robotics prototypes`).
 
 Next navigate into your newly created project using the `project_name` you entered:
 
