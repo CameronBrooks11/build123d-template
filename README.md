@@ -7,7 +7,7 @@ A Cookiecutter template for Build123d CAD projects.
 ### Create Project from Cookie Cutter Template
 
 ```bash
-cookiecutter https://github.com/uwo-fast/build123d-cad-template.git
+cookiecutter https://github.com/CameronBrooks11/build123d-cad-template.git
 ```
 
 You will be prompted for six values—here’s how to fill them:
