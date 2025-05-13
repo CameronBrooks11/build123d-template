@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{ cookiecutter.package_name }}"
+version = "{{ cookiecutter.version }}"
+description = "{{ cookiecutter.project_description }}"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+    { name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.email }}" },
+]
+dependencies = [
+    "build123d",
+    "build123d_ease",
+    "ocp_vscode",
+    "bd_warehouse @ git+https://github.com/gumyr/bd_warehouse.git",
+    "loguru",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "{{ cookiecutter.package_name }}",
+    "{{ cookiecutter.package_name }}.*",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 79
+select = ["E", "F", "I", "C", "Q"]
+ignore = [
+    "D203",
+    "D213",
+    "ERA001",
+    "S101",
+    "RET504",
+    "COM812",
+    "D100",
+    "TD003",
+    "FIX002",
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+
+[tool.black]
+line-length = 79

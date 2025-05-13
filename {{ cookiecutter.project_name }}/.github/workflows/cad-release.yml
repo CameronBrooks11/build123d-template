@@ -1,0 +1,66 @@
+# .github/workflows/cad-release.yml
+
+name: Lint, Run Scripts, and Publish Release on Tag
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*" # Only trigger on tags starting with “v”
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Run ruff linter
+        run: ruff check .
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Run Python scripts in package folder
+        run: |
+          find {{ cookiecutter.package_name }} -name "*.py" | while read file; do
+            echo "Running $file"
+            python "$file"
+          done
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ '{{' }} secrets.GITHUB_TOKEN {{ '}}' }}
+          tag: ${{ '{{' }} github.ref_name {{ '}}' }}
+          name: "Release ${{ '{{' }} github.ref_name {{ '}}' }}"
+          draft: false
+          prerelease: false
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Upload build products to release
+        if: success()
+        run: |
+          echo "Uploading build products to release for ${{ '{{' }} github.ref_name {{ '}}' }}"
+          for file in build/*; do
+            new_file=$(echo $file | sed "s/\(.*\)\.\(.*\)/\1-${{ '{{' }} github.ref_name {{ '}}' }}.\2/")
+            echo "Uploading $file as $new_file"
+            mv $file $new_file
+            gh release upload ${{ '{{' }} github.ref_name {{ '}}' }} "$new_file"
+          done
+        env:
+          GITHUB_TOKEN: ${{ '{{' }} secrets.GITHUB_TOKEN {{ '}}' }}
