@@ -7,6 +7,7 @@ A Cookiecutter template for build123d CAD projects.
 ### Create Project from Cookie Cutter Template
 
 ```bash
+pip install cookiecutter
 cookiecutter https://github.com/CameronBrooks11/build123d-cad-template.git
 ```
 
