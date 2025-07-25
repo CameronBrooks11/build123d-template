@@ -66,3 +66,47 @@ git push -u origin main
 ```
 
 > You will be prompted for your GitHub username and a personal access token (PAT) when pushing over HTTPS.
+
+## Usage
+
+Once your project is scaffolded and you’ve initialized git, you’ll want to run and develop your CAD scripts using the build123d workflow.
+
+### 1. Install the Project in Editable Mode
+
+Editable installs ensure that your local code changes are immediately available when you run the package. From the project root, run:
+
+pip install -e .
+
+This makes your package (e.g. flowcell_manifold) importable system-wide, which fixes ModuleNotFoundError issues when running scripts.
+
+### 2. Run a Script
+
+- You can now run your CAD generation scripts using:
+
+  - `python -m flowcell_manifold.part1`
+
+- This approach ensures that Python treats flowcell_manifold as a proper package and sets up the import paths correctly.
+
+### 3. Exporting CAD Files
+
+By default, the script (e.g. part1.py) will:
+
+- Generate the part geometry.
+
+- Attempt to show it in the build123d viewer (if available).
+
+- Export the part as part1.stl and part1.step into the build folder located at:
+
+  - `<project_root>/build/`
+
+### 4. Adding New Parts
+
+To create a new part:
+
+- Add a new Python file (e.g. part2.py) in the flowcell_manifold directory.
+
+- Follow the structure of part1.py with a Spec dataclass and make_part() function.
+
+- Run it with:
+
+  - `python -m flowcell_manifold.part2`
