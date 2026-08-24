@@ -21,7 +21,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          # Pinned, not "3.x". build123d/OCP need wheels for a new interpreter,
+          # and "3.x" follows each Python release the day it lands — before
+          # those wheels exist. 3.12 sits inside build123d's >=3.10,<3.15 window.
+          python-version: "3.12"
 
       - name: Install ruff
         run: pip install ruff
