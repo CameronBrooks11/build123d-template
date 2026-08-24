@@ -15,7 +15,10 @@ dependencies = [
     "build123d",
     "build123d_ease",
     "ocp_vscode",
-    "bd_warehouse @ git+https://github.com/gumyr/bd_warehouse.git",
+    # The PyPI release, not git main. Upstream main tracks an unreleased
+    # build123d (>=0.11.2.dev0, which has never been published), so a git
+    # install makes the whole dependency set unresolvable.
+    "bd_warehouse>=0.3.0",
     "loguru",
 ]
 
