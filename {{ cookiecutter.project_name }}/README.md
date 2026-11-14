@@ -5,7 +5,7 @@
 ## Usage
 
 ```bash
-cd {{ cookiecutter.project_name }}
-pip install -e .
-python {{ cookiecutter.package_name }}/part1.py
+just setup                                         # .venv with the project and its dev tools
+uv run python -m {{ cookiecutter.package_name }}.part1    # build part1 into build/
+just check                                         # format check, lint, type check
 ```

@@ -1,13 +1,17 @@
 # build123d-template
 
-A Cookiecutter template for build123d CAD projects.
+A Cookiecutter template for build123d CAD projects: a parametric part, STL and
+STEP export, the OCP CAD Viewer for VS Code, and CI that checks the code and
+builds the parts on every push and publishes them on each release tag.
+
+![part1, the cylinder a new project builds](images/part1.png)
 
 ## Quickstart
 
 ### Create Project from Cookie Cutter Template
 
 ```bash
-pip install cookiecutter
+uv tool install cookiecutter
 cookiecutter https://github.com/CameronBrooks11/build123d-template.git
 ```
 
@@ -17,7 +21,7 @@ You will be prompted for six values—here’s how to fill them:
   The name of your project directory and GitHub repo. Use hyphens, not spaces (e.g. `my-cad-project`).
 
 - **package_name**  
-  The Python import name. Must be a valid identifier (lowercase, underscores only), matching `project_name` with hyphens replaced by underscores (e.g. `my_cad_project`).
+  The Python import name. Must be a valid identifier (lowercase, underscores only). The default is `project_name` in lowercase with hyphens replaced by underscores (e.g. `my_cad_project`); press Enter to accept it.
 
 - **author_name**  
   Your full name for metadata (e.g. `Jack Daniel`).
@@ -69,44 +73,55 @@ git push -u origin main
 
 ## Usage
 
-Once your project is scaffolded and you’ve initialized git, you’ll want to run and develop your CAD scripts using the build123d workflow.
+A generated project uses [uv](https://docs.astral.sh/uv/) for its environment and
+[just](https://just.systems/) for its tasks. The examples use the package name
+`my_cad_project`.
 
-### 1. Install the Project in Editable Mode
+### 1. Install the project
 
-Editable installs ensure that your local code changes are immediately available when you run the package. From the project root, run:
+From the project root:
 
-pip install -e .
+```bash
+just setup
+```
 
-This makes your package (e.g. flowcell_manifold) importable system-wide, which fixes ModuleNotFoundError issues when running scripts.
+This runs `uv sync`, which creates `.venv` with build123d, the project itself
+(editable, so `my_cad_project` imports from anywhere) and the dev tools ruff and
+pyright.
 
-### 2. Run a Script
+### 2. Build a part
 
-- You can now run your CAD generation scripts using:
+```bash
+uv run python -m my_cad_project.part1
+```
 
-  - `python -m flowcell_manifold.part1`
+The script builds the part, shows it in the OCP CAD Viewer if the viewer is
+running in VS Code, and exports `part1.stl` and `part1.step` to `build/` in the
+project root. `just parts` runs every module in the package the same way.
 
-- This approach ensures that Python treats flowcell_manifold as a proper package and sets up the import paths correctly.
+### 3. Check the code
 
-### 3. Exporting CAD Files
+```bash
+just check
+```
 
-By default, the script (e.g. part1.py) will:
+This checks formatting, lints with ruff and type-checks with pyright. `just fmt`
+fixes the formatting and import order.
 
-- Generate the part geometry.
+### 4. Add a part
 
-- Attempt to show it in the build123d viewer (if available).
+Copy `part1.py` to a new module, such as `part2.py`, in the package. Keep the
+`Spec` dataclass and `make_part` function, and run it with
+`uv run python -m my_cad_project.part2`.
 
-- Export the part as part1.stl and part1.step into the build folder located at:
+## CI and releases
 
-  - `<project_root>/build/`
+`lint-and-test.yml` runs `just check` and `just parts` on every push.
+`cad-release.yml` runs on tags starting with `v`: it runs the same recipes, then
+publishes a release with each file in `build/` attached, named with the tag
+(for example `part1-v0.1.0.stl`).
 
-### 4. Adding New Parts
+## Licence
 
-To create a new part:
-
-- Add a new Python file (e.g. part2.py) in the flowcell_manifold directory.
-
-- Follow the structure of part1.py with a Spec dataclass and make_part() function.
-
-- Run it with:
-
-  - `python -m flowcell_manifold.part2`
+The template is MIT; see [LICENSE](LICENSE). A generated project gets an MIT
+`LICENSE` naming the author you enter.

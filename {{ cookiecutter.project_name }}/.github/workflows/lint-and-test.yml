@@ -1,4 +1,4 @@
-# .github/workflows/lint-and-test.yml
+# Runs the justfile's recipes, so CI and a local `just check` are the same gate.
 
 name: Lint, Type Check, and Run Python Code
 
@@ -7,72 +7,47 @@ on:
   push:
 
 jobs:
-  lint-with-ruff:
+  check:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install just
+        uses: extractions/setup-just@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
           # Pinned, not "3.x". build123d/OCP need wheels for a new interpreter,
-          # and "3.x" follows each Python release the day it lands — before
-          # those wheels exist. 3.12 sits inside build123d's >=3.10,<3.15 window.
+          # and "3.x" follows each Python release the day it lands, before
+          # those wheels exist. 3.12 sits inside requires-python.
           python-version: "3.12"
 
-      - name: Install ruff
-        run: pip install ruff
+      - name: Install the project and its dev tools
+        run: just setup
 
-      - name: Run ruff linter
-        run: ruff check .
+      - name: Format check, lint and type check
+        run: just check
 
-  check-with-pyright:
+  parts:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install just
+        uses: extractions/setup-just@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          # Pinned, not "3.x". build123d/OCP need wheels for a new interpreter,
-          # and "3.x" follows each Python release the day it lands — before
-          # those wheels exist. 3.12 sits inside build123d's >=3.10,<3.15 window.
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install -e .
+      - name: Install the project
+        run: just setup
 
-      - name: Install pyright
-        run: pip install pyright
-
-      - name: Run pyright
-        run: pyright .
-
-  run-python-scripts:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          # Pinned, not "3.x". build123d/OCP need wheels for a new interpreter,
-          # and "3.x" follows each Python release the day it lands — before
-          # those wheels exist. 3.12 sits inside build123d's >=3.10,<3.15 window.
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -e .
-
-      - name: Run Python scripts in package folder
-        run: |
-          find {{ cookiecutter.package_name }} -name "*.py" | while read file; do
-            echo "Running $file"
-            python "$file"
-          done
+      - name: Run every module in the package
+        run: just parts
