@@ -25,12 +25,10 @@ dependencies = [
 
 [dependency-groups]
 # The project's own checks: `uv sync` installs them with the dependencies, and
-# CI runs them through the justfile. partspec needs the occt extra to check
-# build123d parts, and must run from this environment.
+# CI runs them through the justfile.
 dev = [
     "ruff>=0.11",
     "pyright>=1.1",
-    "partspec[occt]>=0.8",
 ]
 
 [tool.setuptools.packages.find]
