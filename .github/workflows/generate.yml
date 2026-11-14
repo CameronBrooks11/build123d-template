@@ -1,0 +1,44 @@
+# Generates a project from the template and runs its own gates, so a change to
+# the template that breaks a generated project fails here, not in that project.
+
+name: Generate and check a project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the template
+        uses: actions/checkout@v4
+
+      - name: Install just
+        uses: extractions/setup-just@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          # The Python generated projects pin in their own CI.
+          python-version: "3.12"
+
+      - name: Generate a project with a hyphenated name
+        run: uvx cookiecutter==2.7.1 --no-input -o "$RUNNER_TEMP" . project_name=ci-check-project
+
+      - name: Install it
+        working-directory: ${{ runner.temp }}/ci-check-project
+        run: just setup
+
+      - name: Format check, lint and type check
+        working-directory: ${{ runner.temp }}/ci-check-project
+        run: just check
+
+      - name: Build its parts
+        working-directory: ${{ runner.temp }}/ci-check-project
+        run: |
+          just parts
+          ls -l build/part1.stl build/part1.step
