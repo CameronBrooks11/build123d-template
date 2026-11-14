@@ -7,6 +7,7 @@ name = "{{ cookiecutter.package_name }}"
 version = "{{ cookiecutter.version }}"
 description = "{{ cookiecutter.project_description }}"
 readme = "README.md"
+requires-python = ">=3.12,<3.15"
 license = "MIT"
 authors = [
     { name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.email }}" },
@@ -20,6 +21,16 @@ dependencies = [
     # install makes the whole dependency set unresolvable.
     "bd_warehouse>=0.3.0",
     "loguru",
+]
+
+[dependency-groups]
+# The project's own checks: `uv sync` installs them with the dependencies, and
+# CI runs them through the justfile. partspec needs the occt extra to check
+# build123d parts, and must run from this environment.
+dev = [
+    "ruff>=0.11",
+    "pyright>=1.1",
+    "partspec[occt]>=0.8",
 ]
 
 [tool.setuptools.packages.find]

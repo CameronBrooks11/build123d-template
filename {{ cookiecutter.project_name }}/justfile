@@ -1,0 +1,18 @@
+# Install the project, its dependencies and its dev tools into .venv
+setup:
+    uv sync
+
+# Format the code (changes files)
+fmt:
+    uv run ruff format .
+    uv run ruff check --fix .
+
+# Format check, lint and type check, as CI runs them
+check:
+    uv run ruff format --check .
+    uv run ruff check .
+    uv run pyright
+
+# Run every module in the package, which builds each part into build/
+parts:
+    for f in $(find {{ cookiecutter.package_name }} -name "*.py" | sort); do echo "Running $f"; uv run python "$f"; done
