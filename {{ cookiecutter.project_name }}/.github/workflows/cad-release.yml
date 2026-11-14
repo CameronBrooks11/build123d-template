@@ -2,11 +2,11 @@
 
 name: Lint, Run Scripts, and Publish Release on Tag
 
+# Tags only: a manual run would take the branch name as the release tag.
 on:
-  workflow_dispatch:
   push:
     tags:
-      - "v*" # Only trigger on tags starting with “v”
+      - "v*"
 
 jobs:
   lint-and-build:
@@ -18,29 +18,23 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install just
+        uses: extractions/setup-just@v2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          # Pinned, not "3.x". build123d/OCP need wheels for a new interpreter,
-          # and "3.x" follows each Python release the day it lands — before
-          # those wheels exist. 3.12 sits inside build123d's >=3.10,<3.15 window.
+          # Pinned, as in lint-and-test.yml.
           python-version: "3.12"
 
-      - name: Install ruff
-        run: pip install ruff
+      - name: Install the project and its dev tools
+        run: just setup
 
-      - name: Run ruff linter
-        run: ruff check .
+      - name: Format check, lint and type check
+        run: just check
 
-      - name: Install dependencies
-        run: pip install -e .
-
-      - name: Run Python scripts in package folder
-        run: |
-          find {{ cookiecutter.package_name }} -name "*.py" | while read file; do
-            echo "Running $file"
-            python "$file"
-          done
+      - name: Build the parts into build/
+        run: just parts
 
       - name: Create GitHub Release
         id: create_release
@@ -51,9 +45,6 @@ jobs:
           name: "Release ${{ '{{' }} github.ref_name {{ '}}' }}"
           draft: false
           prerelease: false
-
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh
 
       - name: Upload build products to release
         if: success()
