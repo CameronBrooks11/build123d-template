@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,7 +7,7 @@ name = "{{ cookiecutter.package_name }}"
 version = "{{ cookiecutter.version }}"
 description = "{{ cookiecutter.project_description }}"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
 authors = [
     { name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.email }}" },
 ]
