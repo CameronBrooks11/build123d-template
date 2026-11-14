@@ -1,6 +1,6 @@
 {
     "project_name": "build123d-template",
-    "package_name": "b123d_template",
+    "package_name": "{{ cookiecutter.project_name|lower|replace('-', '_') }}",
     "author_name": "FirstName LastName",
     "email": "name@email.com",
     "version": "0.1.0",
