@@ -1,0 +1,63 @@
+name: Publish to GitHub Pages
+
+# Publishes README.md as the project's page. Single-file mode, because
+# directory mode would also convert the generated project's README inside
+# {{ cookiecutter.project_name }}/, placeholders and all.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # README.md -> README.html, with images/ copied beside it.
+      - name: Convert Markdown to HTML
+        id: convert
+        uses: CameronBrooks11/md2html-action@v1
+        with:
+          source-file: "README.md"
+          output-dir: "_site"
+          template: "default"
+          stylesheet: "technical"
+          site-title: "build123d-template"
+          base-url: "https://cameronbrooks11.github.io/build123d-template"
+          include-toc: "true"
+
+      - name: Make the README the landing page
+        run: |
+          mv _site/README.html _site/index.html
+          test -f _site/images/part1.png
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

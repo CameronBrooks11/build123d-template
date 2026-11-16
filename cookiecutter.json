@@ -1,8 +1,8 @@
 {
-    "project_name": "build123d-template",
+    "project_name": "my-cad-project",
     "package_name": "{{ cookiecutter.project_name|lower|replace('-', '_') }}",
-    "author_name": "FirstName LastName",
-    "email": "name@email.com",
+    "author_name": "Your Name",
+    "email": "you@example.com",
     "version": "0.1.0",
-    "project_description": "A build123d CAD project template"
+    "project_description": "A build123d CAD project"
 }

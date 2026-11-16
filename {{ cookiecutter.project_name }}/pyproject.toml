@@ -39,26 +39,9 @@ include = [
 ]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py312"
 line-length = 79
 lint.select = ["E", "F", "I", "C", "Q"]
-lint.ignore = [
-    "D203",
-    "D213",
-    "ERA001",
-    "S101",
-    "RET504",
-    "COM812",
-    "D100",
-    "TD003",
-    "FIX002",
-]
-
-[tool.isort]
-profile = "black"
 
 [tool.pyright]
 typeCheckingMode = "basic"
-
-[tool.black]
-line-length = 79
