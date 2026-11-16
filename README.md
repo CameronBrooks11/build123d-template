@@ -18,7 +18,7 @@ cookiecutter https://github.com/CameronBrooks11/build123d-template.git
 You will be prompted for six values—here’s how to fill them:
 
 - **project_name**  
-  The name of your project directory and GitHub repo. Use hyphens, not spaces (e.g. `my-cad-project`).
+  The name of your project directory and GitHub repo. Use hyphens, not spaces (e.g. `my-cad-project`, the default).
 
 - **package_name**  
   The Python import name. Must be a valid identifier (lowercase, underscores only). The default is `project_name` in lowercase with hyphens replaced by underscores (e.g. `my_cad_project`); press Enter to accept it.
@@ -41,15 +41,21 @@ Next navigate into your newly created project using the `project_name` you enter
 cd project_name
 ```
 
-### Initialize Git and make your first commit
+### Install it and make your first commit
 
-Start by initializing a new git repository and commit the initial contents of your newly created project template:
+Install the project, then commit it together with the `uv.lock` that `just setup` writes:
 
 ```bash
+just setup
 git init
 git add .
 git commit -m "Initial cookiecutter scaffold"
 ```
+
+The lock file pins every dependency, so CI and anyone who clones the project get
+the same build123d and OCP versions you developed against. Without it, each
+`uv sync` resolves the newest releases afresh. `uv lock --upgrade` moves them
+forward when you choose to.
 
 ### Method 1: Using GitHub CLI (API auth)
 
@@ -79,15 +85,9 @@ A generated project uses [uv](https://docs.astral.sh/uv/) for its environment an
 
 ### 1. Install the project
 
-From the project root:
-
-```bash
-just setup
-```
-
-This runs `uv sync`, which creates `.venv` with build123d, the project itself
-(editable, so `my_cad_project` imports from anywhere) and the dev tools ruff and
-pyright.
+`just setup`, from the project root, runs `uv sync`. It creates `.venv` with the
+versions in `uv.lock`: build123d, the project itself (editable, so
+`my_cad_project` imports from anywhere) and the dev tools ruff and pyright.
 
 ### 2. Build a part
 
@@ -97,7 +97,8 @@ uv run python -m my_cad_project.part1
 
 The script builds the part, shows it in the OCP CAD Viewer if the viewer is
 running in VS Code, and exports `part1.stl` and `part1.step` to `build/` in the
-project root. `just parts` runs every module in the package the same way.
+project root. `just parts` builds every module at the top of the package the
+same way, and fails if any of them fails.
 
 ### 3. Check the code
 
@@ -110,9 +111,11 @@ fixes the formatting and import order.
 
 ### 4. Add a part
 
-Copy `part1.py` to a new module, such as `part2.py`, in the package. Keep the
-`Spec` dataclass and `make_part` function, and run it with
-`uv run python -m my_cad_project.part2`.
+Copy `part1.py` to a new module at the top of the package, such as `part2.py`.
+Rename `Part1Spec` and `make_part1` to match, change the geometry, and give the
+export a new name. `uv run python -m my_cad_project.part2` builds it, and
+`just parts` picks it up. Shared code goes in `utils/`, which `just parts`
+does not run.
 
 ## CI and releases
 
@@ -123,5 +126,5 @@ publishes a release with each file in `build/` attached, named with the tag
 
 ## Licence
 
-The template is MIT; see [LICENSE](LICENSE). A generated project gets an MIT
+The template is MIT; see [LICENSE](https://github.com/CameronBrooks11/build123d-template/blob/main/LICENSE). A generated project gets an MIT
 `LICENSE` naming the author you enter.

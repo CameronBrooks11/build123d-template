@@ -13,6 +13,13 @@ check:
     uv run ruff check .
     uv run pyright
 
-# Run every module in the package, which builds each part into build/
+# Build every part into build/: each module at the top of the package, as
+# `python -m`. Stops at the first part that fails.
 parts:
-    for f in $(find {{ cookiecutter.package_name }} -name "*.py" | sort); do echo "Running $f"; uv run python "$f"; done
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for f in $(find {{ cookiecutter.package_name }} -maxdepth 1 -name "*.py" ! -name "__init__.py" | sort); do
+        module="{{ cookiecutter.package_name }}.$(basename "$f" .py)"
+        echo "Building $module"
+        uv run python -m "$module"
+    done
